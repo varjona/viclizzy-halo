@@ -37,6 +37,9 @@ out = cv2.VideoWriter('output21.mp4', fourcc, 30.0, (640, 480))
 # face detector object
 face_detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 
+# profile_face detector object
+profile_face_classifier = cv2.CascadeClassifier("haarcascade_profileface.xml")
+
 # body detector object
 body_classifier = cv2.CascadeClassifier("haarcascade_upperbody.xml")
 
@@ -90,6 +93,7 @@ def face_data(image, CallOut, Distance_level):
     face_center_y = 0
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = face_detector.detectMultiScale(gray_image, 1.3, 5)
+
     for (x, y, w, h) in faces:
         line_thickness = 2
         # print(len(faces))
@@ -139,6 +143,37 @@ def pos_finder(distance, face_x):
     return round(position_x, 2), round(position_y, 2)
 
 
+# profile_face Left detection Function
+def profile_faceL_data(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Pass gray frame to our body classifier
+    profile_faceL = profile_face_classifier.detectMultiScale(gray, 1.2, 5)
+
+    # Extract bounding boxes for any bodies identified
+    for (x, y, w, h) in profile_faceL:
+        cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 255), 2)
+        cv2.putText(image, f"Profile-Face-L found!", (x, y-2), fonts, 0.5, (BLACK), 2)
+
+    return profile_faceL
+
+
+# profile_face Right detection Function
+def profile_faceR_data(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Pass gray frame to our body classifier
+    flipped = cv2.flip(gray, 1)
+    profile_faceR = profile_face_classifier.detectMultiScale(flipped, 1.2, 5)
+
+    # Extract bounding boxes for any bodies identified
+    for (x, y, w, h) in profile_faceR:
+        cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 255), 2)
+        cv2.putText(image, f"Profile-Face-R found!", (x, y-2), fonts, 0.5, (BLACK), 2)
+
+    return profile_faceR
+
+
 # body detection Function
 def body_data(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -149,8 +184,7 @@ def body_data(image):
     # Extract bounding boxes for any bodies identified
     for (x, y, w, h) in bodies:
         cv2.rectangle(image, (x, y+20), (x+w, y+h), (0, 255, 255), 2)
-        cv2.putText(image, f"Upper-Body found!",
-                    (x, y-2), fonts, 0.5, (BLACK), 2)
+        cv2.putText(image, f"Upper-Body found!", (x, y-2), fonts, 0.5, (BLACK), 2)
 
     return bodies
 
@@ -170,9 +204,12 @@ while True:
     # Get body data
     bodies = body_data(frame)
 
+    # Get profile_face data
+    profile_faceL = profile_faceL_data(frame)
+    profile_faceR = profile_faceR_data(frame)
+
     #Get face data
-    face_width_in_frame, Faces, FC_X, FC_Y = face_data(
-        frame, True, Distance_level)
+    face_width_in_frame, Faces, _, _ = face_data(frame, True, Distance_level)
 
     # finding the distance by calling function Distance finder
     for (face_x, face_y, face_w, face_h) in Faces:
@@ -191,7 +228,7 @@ while True:
     cv2.imshow("VicLizzy Distance Measurement", frame)
     out.write(frame)
 
-    if cv2.waitKey(100) == ord("q"):
+    if cv2.waitKey(300) == ord("q"):
         break
 
 cap.release()
