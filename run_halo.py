@@ -1,6 +1,13 @@
 import cv2
 import math
 
+"""
+TODO:
+    1) Turn color image to gray to not repeat gray-scaling.
+    2) There are two similar for loops: one in the while loop, and one in the
+        face data function.
+"""
+
 # variables
 # distance from camera to object(face) measured
 Known_distance = 30  # Inches
