@@ -1,4 +1,6 @@
 import cv2
+import math
+
 # variables
 # distance from camera to object(face) measured
 Known_distance = 30  # Inches
@@ -127,6 +129,16 @@ def face_data(image, CallOut, Distance_level):
     return face_width, faces, face_center_x, face_center_y
 
 
+# x & y position estimation function
+def pos_finder(distance, face_x):
+    # TODO: test and find out a better number to divide face_x to get the angle
+    angle = face_x/8
+    position_x = distance * math.sin(math.radians(angle))
+    position_y = distance * math.cos(math.radians(angle))
+
+    return round(position_x, 2), round(position_y, 2)
+
+
 # body detection Function
 def body_data(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -171,9 +183,10 @@ while True:
             Distance = round(Distance, 2)
             # Drawing Text on the screen
             Distance_level = int(Distance)
+            pos_x, pos_y = pos_finder(Distance, face_x)
 
-            cv2.putText(frame, f"Distance {Distance} Inches",
-                        (face_x-6, face_y-6), fonts, 0.5, (BLACK), 2)
+            #cv2.putText(frame, f"Distance {Distance} Inches", (face_x-6, face_y-6), fonts, 0.5, (BLACK), 2)
+            cv2.putText(frame, f"X: {pos_x}, Y: {pos_y}", (face_x - 6, face_y - 6), fonts, 0.5, (BLACK), 2)
 
     cv2.imshow("VicLizzy Distance Measurement", frame)
     out.write(frame)
