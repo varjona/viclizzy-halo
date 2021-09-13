@@ -10,10 +10,9 @@ import cv2
 import math
 # IMPORTS ------------------------------------------------------------------- #
 '''
-DESCRIPTION
+Description
+The vicklizzy-halo pro
 
-
-DESCRIPTION
 
 TODO:
     1) Turn color image to gray to not repeat gray-scaling.
@@ -21,6 +20,7 @@ TODO:
         face data function.
     3) Have a flipped image ready.
     4) Have gray image ready.
+    6) Make a debug option.
 '''
 
 # Helper variables -----------------------------------------------------------#
@@ -120,7 +120,7 @@ def Distance_Finder(focal_Length, real_face_width, face_width_in_frame):
     return (real_face_width*focal_Length)/face_width_in_frame
 
 
-def Face_Data(image, CallOut, Distance_level):
+def Face_Data(image, CallOut, distance_lvl):
     """
     This function Detect face and Draw Rectangle and display the distance over
     screen.
@@ -131,7 +131,7 @@ def Face_Data(image, CallOut, Distance_level):
         Call_Out        bool    If want show Distance and Rectangle on the
                                 Screen or not.
 
-        Distance_Level  int     Which change the line according the Distance
+        distance_lvl    int     Which change the line according the Distance
                                 changes(Intractivate).
 
     Return:
@@ -176,15 +176,15 @@ def Face_Data(image, CallOut, Distance_level):
         face_center_x = int(w/2)+x
         face_center_y = int(h/2)+y
 
-        if Distance_level < 10:
-            Distance_level = 10
+        if distance_lvl < 10:
+            distance_lvl = 10
 
         # cv2.circle(image, (face_center_x, face_center_y),5, (255,0,255), 3 )
         if CallOut is True:
             # cv2.line(image, (x,y), (face_center_x,face_center_y ), (155,155,155),1)
             cv2.line(image, (x, y-11), (x+180, y-11), (ORANGE), 28)
             cv2.line(image, (x, y-11), (x+180, y-11), (YELLOW), 20)
-            cv2.line(image, (x, y-11), (x+Distance_level, y-11), (GREEN), 18)
+            cv2.line(image, (x, y-11), (x+distance_level, y-11), (GREEN), 18)
 
             # cv2.circle(image, (face_center_x, face_center_y),2, (255,0,255), 1 )
             # cv2.circle(image, (x, y),2, (255,0,255), 1 )
@@ -261,15 +261,13 @@ print(focal_length_found)
 while True:
     _, frame = cap.read()
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
     # Get body data
     bodies = Body_Data(frame)
 
     # Get profile_face data
-    # profile_faceL = profile_faceL_data(frame)
-    # profile_faceR = profile_faceR_data(frame)
-
-    profile_face_l = Profile_Face_Left_Data(frame, gray_frame)
-    profile_face_r = Profile_Face_Right_Data(frame, gray_frame)
+    # profile_face_l = Profile_Face_Left_Data(frame, gray_frame)
+    # profile_face_r = Profile_Face_Right_Data(frame, gray_frame)
 
     # Get face data
     face_width_in_frame, Faces, _, _ = Face_Data(frame, True, distance_level)
@@ -290,7 +288,7 @@ while True:
                         (face_x - 6, face_y - 6), fonts, 0.5, (BLACK), 2)
 
     cv2.imshow("VicLizzy Distance Measurement", frame)
-    out.write(frame)
+    # out.write(frame)
 
     if cv2.waitKey(100) == ord("q"):
         break
