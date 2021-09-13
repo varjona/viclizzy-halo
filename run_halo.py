@@ -1,20 +1,35 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Sep 12 15:36:16 2021
+
+@author: sysadmin
+"""
+# IMPORTS ------------------------------------------------------------------- #
 import cv2
 import math
+# IMPORTS ------------------------------------------------------------------- #
+'''
+DESCRIPTION
 
-"""
+
+DESCRIPTION
+
 TODO:
     1) Turn color image to gray to not repeat gray-scaling.
     2) There are two similar for loops: one in the while loop, and one in the
         face data function.
-"""
+    3) Have a flipped image ready.
+    4) Have gray image ready.
+'''
 
-# variables
-# distance from camera to object(face) measured
-Known_distance = 30  # Inches
-# mine is 14.3 something, measure your face width, are google it
-Known_width = 5.7  # Inches
+# Helper variables -----------------------------------------------------------#
+#   Distance from camera to object(face) measured.
+known_distance = 30  # Inches
 
-# Colors  >>> BGR Format(BLUE, GREEN, RED)
+#   Mine is 14.3cm something, measure your face width.
+known_width = 5.7  # Inches
+
 GREEN = (0, 255, 0)
 RED = (0, 0, 255)
 BLACK = (0, 0, 0)
@@ -33,9 +48,17 @@ fonts = cv2.FONT_HERSHEY_COMPLEX
 fonts2 = cv2.FONT_HERSHEY_SCRIPT_SIMPLEX
 fonts3 = cv2.FONT_HERSHEY_COMPLEX_SMALL
 fonts4 = cv2.FONT_HERSHEY_TRIPLEX
+
 # Camera Object
-cap = cv2.VideoCapture(0)  # Number According to your Camera
-Distance_level = 0
+cap = cv2.VideoCapture(0)
+_, frame = cap.read()
+
+# Width and height of an image.
+x_len = len(frame[1])
+y_len = len(frame)
+
+# Colors  >>> BGR Format(BLUE, GREEN, RED)
+distance_level = 0
 
 # Define the codec and create VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -50,59 +73,90 @@ profile_face_classifier = cv2.CascadeClassifier("haarcascade_profileface.xml")
 # body detector object
 body_classifier = cv2.CascadeClassifier("haarcascade_upperbody.xml")
 
-# focal length finder function
-def FocalLength(measured_distance, real_width, width_in_rf_image):
-    # Function Discrption (Doc String)
+# reading reference image from directory
+ref_image = cv2.imread("Ref_image.png")
+
+# Helper functions -----------------------------------------------------------#
+
+
+def Focal_Length(measured_distance, real_width, width_in_rf_image):
     """
-    This Function Calculate the Focal Length(distance between lens to CMOS sensor), it is simple constant we can find by using
-    MEASURED_DISTACE, REAL_WIDTH(Actual width of object) and WIDTH_OF_OBJECT_IN_IMAGE
-    :param1 Measure_Distance(int): It is distance measured from object to the Camera while Capturing Reference image
+    This Function Calculate the Focal Length(distance between lens to CMOS
+    sensor), it is simple constant we can find by using MEASURED_DISTACE,
+    REAL_WIDTH(Actual width of object) and WIDTH_OF_OBJECT_IN_IMAGE.
 
-    :param2 Real_Width(int): It is Actual width of object, in real world (like My face width is = 5.7 Inches)
-    :param3 Width_In_Image(int): It is object width in the frame /image in our case in the reference image(found by Face detector)
-    :retrun Focal_Length(Float):
+    Paramaters:
+        Measure_Distance    int     It is distance measured from object to the
+                                    Camera while Capturing Reference image.
+
+        Real_Width          int     It is Actual width of object, in real world
+                                    (like My face width is = 5.7 Inches).
+
+        Width_In_Image      int     It is object width in the frame /image in
+                                    our case in the reference image(found by
+                                    Face detector).
+
+    Values returned:
+        Focal_Length        float
     """
-    focal_length = (width_in_rf_image * measured_distance) / real_width
-    return focal_length
+    return (width_in_rf_image*measured_distance)/real_width
 
 
-# distance estimation function
-def Distance_finder(Focal_Length, real_face_width, face_width_in_frame):
+def Distance_Finder(focal_Length, real_face_width, face_width_in_frame):
     """
-    This Function simply Estimates the distance between object and camera using arguments(Focal_Length, Actual_object_width, Object_width_in_the_image)
-    :param1 Focal_length(float): return by the Focal_Length_Finder function
+    This Function simply estimates the distance between object and camera using
+    arguments(Focal_Length, Actual_object_width, Object_width_in_the_image).
+    Parameters:
+        focal_length        float   Return by the Focal_Length_Finder function.
 
-    :param2 Real_Width(int): It is Actual width of object, in real world (like My face width is = 5.7 Inches)
-    :param3 object_Width_Frame(int): width of object in the image(frame in our case, using Video feed)
-    :return Distance(float) : distance Estimated
+        real_Width          int     It is Actual width of object, in real world
+                                    (like My face width is = 5.7 Inches).
+
+        object_Width_Frame  int     Width of object in the image(frame in our
+                                    case, using Video feed).
+    Return:
+        Distance            float   Distance estimated.
     """
-    distance = (real_face_width * Focal_Length)/face_width_in_frame
-    return distance
+    return (real_face_width*focal_Length)/face_width_in_frame
 
 
-# face detection Function
-def face_data(image, CallOut, Distance_level):
+def Face_Data(image, CallOut, Distance_level):
     """
-    This function Detect face and Draw Rectangle and display the distance over Screen
+    This function Detect face and Draw Rectangle and display the distance over
+    screen.
 
-    :param1 Image(Mat): simply the frame
-    :param2 Call_Out(bool): If want show Distance and Rectangle on the Screen or not
-    :param3 Distance_Level(int): which change the line according the Distance changes(Intractivate)
-    :return1  face_width(int): it is width of face in the frame which allow us to calculate the distance and find focal length
-    :return2 face(list): length of face and (face paramters)
-    :return3 face_center_x: face centroid_x coordinate(x)
-    :return4 face_center_y: face centroid_y coordinate(y)
+    Parameters:
+        Image           Mat     Frame.
+
+        Call_Out        bool    If want show Distance and Rectangle on the
+                                Screen or not.
+
+        Distance_Level  int     Which change the line according the Distance
+                                changes(Intractivate).
+
+    Return:
+        face_width      int     It is width of face in the frame which allow us
+                                to calculate the distance and find focal
+                                length.
+
+        face            list    Length of face and (face paramters).
+
+        face_center_x   TODO    face centroid_x coordinate(x)
+
+        face_center_y   TODO    face centroid_y coordinate(y)
     """
 
     face_width = 0
-    face_x, face_y = 0, 0
+    # face_x, face_y = 0, 0
     face_center_x = 0
     face_center_y = 0
+
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faces = face_detector.detectMultiScale(gray_image, 1.3, 5)
 
     for (x, y, w, h) in faces:
         line_thickness = 2
+
         # print(len(faces))
         LLV = int(h*0.12)
         # print(LLV)
@@ -110,22 +164,23 @@ def face_data(image, CallOut, Distance_level):
         # cv2.rectangle(image, (x, y), (x+w, y+h), BLACK, 1)
         cv2.line(image, (x, y+LLV), (x+w, y+LLV), (GREEN), line_thickness)
         cv2.line(image, (x, y+h), (x+w, y+h), (GREEN), line_thickness)
-        cv2.line(image, (x, y+LLV), (x, y+LLV+LLV), (GREEN), line_thickness)
-        cv2.line(image, (x+w, y+LLV), (x+w, y+LLV+LLV),
-                 (GREEN), line_thickness)
+        cv2.line(image, (x, y+LLV), (x, y+2*LLV), (GREEN), line_thickness)
+        cv2.line(image, (x+w, y+LLV), (x+w, y+2*LLV), (GREEN), line_thickness)
         cv2.line(image, (x, y+h), (x, y+h-LLV), (GREEN), line_thickness)
         cv2.line(image, (x+w, y+h), (x+w, y+h-LLV), (GREEN), line_thickness)
 
         face_width = w
-        face_center = []
-        # Drwaing circle at the center of the face
+        # face_center = []
+
+        # Drawing circle at the center of the face
         face_center_x = int(w/2)+x
         face_center_y = int(h/2)+y
+
         if Distance_level < 10:
             Distance_level = 10
 
         # cv2.circle(image, (face_center_x, face_center_y),5, (255,0,255), 3 )
-        if CallOut == True:
+        if CallOut is True:
             # cv2.line(image, (x,y), (face_center_x,face_center_y ), (155,155,155),1)
             cv2.line(image, (x, y-11), (x+180, y-11), (ORANGE), 28)
             cv2.line(image, (x, y-11), (x+180, y-11), (YELLOW), 20)
@@ -140,9 +195,9 @@ def face_data(image, CallOut, Distance_level):
     return face_width, faces, face_center_x, face_center_y
 
 
-# x & y position estimation function
-def pos_finder(distance, face_x):
-    # TODO: test and find out a better number to divide face_x to get the angle
+def Position_Finder(distance, face_x):
+    # TODO: test and find out a better number to divide face_x to get the
+    #       angle.
     angle = face_x/8
     position_x = distance * math.sin(math.radians(angle))
     position_y = distance * math.cos(math.radians(angle))
@@ -150,39 +205,38 @@ def pos_finder(distance, face_x):
     return round(position_x, 2), round(position_y, 2)
 
 
-# profile_face Left detection Function
-def profile_faceL_data(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    # Pass gray frame to our body classifier
-    profile_faceL = profile_face_classifier.detectMultiScale(gray, 1.2, 5)
+def Profile_Face_Left_Data(frame, gray_frame):
+    # Pass frame to our body classifier
+    profile_face_l = profile_face_classifier.detectMultiScale(gray_frame, 1.2,
+                                                              5)
 
     # Extract bounding boxes for any bodies identified
-    for (x, y, w, h) in profile_faceL:
-        cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 255), 2)
-        cv2.putText(image, f"Profile-Face-L found!", (x, y-2), fonts, 0.5, (BLACK), 2)
+    for (x, y, w, h) in profile_face_l:
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 255), 2)
+        cv2.putText(frame, "Left profile face found!", (x, y-2), fonts, 0.5,
+                    (BLACK), 2)
 
-    return profile_faceL
+    return profile_face_l
 
 
 # profile_face Right detection Function
-def profile_faceR_data(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    # Pass gray frame to our body classifier
-    flipped = cv2.flip(gray, 1)
-    profile_faceR = profile_face_classifier.detectMultiScale(flipped, 1.2, 5)
+def Profile_Face_Right_Data(frame, gray_frame):
+    # flipped_frame = cv2.flip(frame, 1)
+    flipped_g_frame = cv2.flip(gray_frame, 1) 
+    profile_face_r = profile_face_classifier.detectMultiScale(flipped_g_frame,
+                                                              1.2, 5)
 
     # Extract bounding boxes for any bodies identified
-    for (x, y, w, h) in profile_faceR:
-        cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 255), 2)
-        cv2.putText(image, f"Profile-Face-R found!", (x, y-2), fonts, 0.5, (BLACK), 2)
+    for (x, y, w, h) in profile_face_r:
+        cv2.rectangle(frame, (x_len-x-w, y), (x_len-x, y+h), (0, 255, 255), 2)
+        cv2.putText(frame, "Right profile face found!", (x_len-x-w, y-2),
+                    fonts, 0.5, (BLACK), 2)
 
-    return profile_faceR
+    return profile_face_r
 
 
 # body detection Function
-def body_data(image):
+def Body_Data(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Pass gray frame to our body classifier
@@ -191,53 +245,58 @@ def body_data(image):
     # Extract bounding boxes for any bodies identified
     for (x, y, w, h) in bodies:
         cv2.rectangle(image, (x, y+20), (x+w, y+h), (0, 255, 255), 2)
-        cv2.putText(image, f"Upper-Body found!", (x, y-2), fonts, 0.5, (BLACK), 2)
+        cv2.putText(image, "Upper-Body found!", (x, y-2), fonts, 0.5,
+                    (BLACK), 2)
 
     return bodies
 
 
-# reading reference image from directory
-ref_image = cv2.imread("Ref_image.png")
+ref_image_face_width, _, _, _ = Face_Data(ref_image, False, distance_level)
 
-ref_image_face_width, _, _, _ = face_data(ref_image, False, Distance_level)
-Focal_length_found = FocalLength(
-    Known_distance, Known_width, ref_image_face_width)
-print(Focal_length_found)
+focal_length_found = Focal_Length(known_distance, known_width,
+                                  ref_image_face_width)
 
+print(focal_length_found)
 
 while True:
     _, frame = cap.read()
-
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # Get body data
-    bodies = body_data(frame)
+    bodies = Body_Data(frame)
 
     # Get profile_face data
-    profile_faceL = profile_faceL_data(frame)
-    profile_faceR = profile_faceR_data(frame)
+    # profile_faceL = profile_faceL_data(frame)
+    # profile_faceR = profile_faceR_data(frame)
 
-    #Get face data
-    face_width_in_frame, Faces, _, _ = face_data(frame, True, Distance_level)
+    profile_face_l = Profile_Face_Left_Data(frame, gray_frame)
+    profile_face_r = Profile_Face_Right_Data(frame, gray_frame)
+
+    # Get face data
+    face_width_in_frame, Faces, _, _ = Face_Data(frame, True, distance_level)
 
     # finding the distance by calling function Distance finder
     for (face_x, face_y, face_w, face_h) in Faces:
         if face_width_in_frame != 0:
+            distance = Distance_Finder(focal_length_found, known_width,
+                                       face_width_in_frame)
+            distance = round(distance, 2)
 
-            Distance = Distance_finder(
-                Focal_length_found, Known_width, face_width_in_frame)
-            Distance = round(Distance, 2)
             # Drawing Text on the screen
-            Distance_level = int(Distance)
-            pos_x, pos_y = pos_finder(Distance, face_x)
+            distance_level = int(distance)
+            pos_x, pos_y = Position_Finder(distance, face_x)
 
             #cv2.putText(frame, f"Distance {Distance} Inches", (face_x-6, face_y-6), fonts, 0.5, (BLACK), 2)
-            cv2.putText(frame, f"X: {pos_x}, Y: {pos_y}", (face_x - 6, face_y - 6), fonts, 0.5, (BLACK), 2)
+            cv2.putText(frame, f"X: {pos_x}, Y: {pos_y}",
+                        (face_x - 6, face_y - 6), fonts, 0.5, (BLACK), 2)
 
     cv2.imshow("VicLizzy Distance Measurement", frame)
     out.write(frame)
 
-    if cv2.waitKey(300) == ord("q"):
+    if cv2.waitKey(100) == ord("q"):
         break
 
 cap.release()
 # out.release()
 cv2.destroyAllWindows()
+
+# CONTENT ------------------------------------------------------------------- #
