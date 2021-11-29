@@ -53,9 +53,9 @@ fonts4 = cv2.FONT_HERSHEY_TRIPLEX
 cap = cv2.VideoCapture(0)
 _, frame = cap.read()
 
-# Width and height of an image.
-x_len = len(frame[1])
-y_len = len(frame)
+# Width and height of a frame (image).
+x_frame_len = len(frame[1])
+y_frame_len = len(frame)
 
 # Colors  >>> BGR Format(BLUE, GREEN, RED)
 distance_level = 0
@@ -73,7 +73,8 @@ profile_face_classifier = cv2.CascadeClassifier("haarcascade_profileface.xml")
 # body detector object
 body_classifier = cv2.CascadeClassifier("haarcascade_upperbody.xml")
 
-# reading reference image from directory
+# Reading reference image from directory
+# This is for a face!
 ref_image = cv2.imread("Ref_image.png")
 
 # Helper functions -----------------------------------------------------------#
@@ -81,43 +82,47 @@ ref_image = cv2.imread("Ref_image.png")
 
 def Focal_Length(measured_distance, real_width, width_in_rf_image):
     """
-    This Function Calculate the Focal Length(distance between lens to CMOS
+    This function calculates the focal length (distance between lens to CMOS
     sensor), it is simple constant we can find by using MEASURED_DISTACE,
-    REAL_WIDTH(Actual width of object) and WIDTH_OF_OBJECT_IN_IMAGE.
+    REAL_WIDTH (actual width of object) and WIDTH_OF_OBJECT_IN_IMAGE.
 
     Paramaters:
-        Measure_Distance    int     It is distance measured from object to the
-                                    Camera while Capturing Reference image.
+        measured_distance   int     It is distance measured from object to the
+                                    camera while capturing reference image.
 
-        Real_Width          int     It is Actual width of object, in real world
-                                    (like My face width is = 5.7 Inches).
+        Real_Width          int     It is the actual width of object in the
+                                    real world (like My face width of 5.7
+                                    inches).
 
         Width_In_Image      int     It is object width in the frame /image in
                                     our case in the reference image(found by
                                     Face detector).
 
-    Values returned:
+    Return:
         Focal_Length        float
     """
-    return (width_in_rf_image*measured_distance)/real_width
+    focal_length = (width_in_rf_image*measured_distance)/real_width
+    return focal_length
 
 
-def Distance_Finder(focal_Length, real_face_width, face_width_in_frame):
+def Distance_Finder(focal_length, real_face_width, face_width_in_frame):
     """
-    This Function simply estimates the distance between object and camera using
-    arguments(Focal_Length, Actual_object_width, Object_width_in_the_image).
+    This function estimates the distance between the object and camera using
+    the following parameters.
     Parameters:
-        focal_length        float   Return by the Focal_Length_Finder function.
+        focal_length        float   Return parameter by the Focal_Length
+                                    function.
 
-        real_Width          int     It is Actual width of object, in real world
+        real_width          int     It is the actual width of object, in real world
                                     (like My face width is = 5.7 Inches).
 
         object_Width_Frame  int     Width of object in the image(frame in our
                                     case, using Video feed).
     Return:
-        Distance            float   Distance estimated.
+        distance            float   Distance estimated.
     """
-    return (real_face_width*focal_Length)/face_width_in_frame
+    distance = (real_face_width*focal_length)/face_width_in_frame
+    return distance
 
 
 def Face_Data(image, CallOut, distance_lvl):
@@ -228,8 +233,8 @@ def Profile_Face_Right_Data(frame, gray_frame):
 
     # Extract bounding boxes for any bodies identified
     for (x, y, w, h) in profile_face_r:
-        cv2.rectangle(frame, (x_len-x-w, y), (x_len-x, y+h), (0, 255, 255), 2)
-        cv2.putText(frame, "Right profile face found!", (x_len-x-w, y-2),
+        cv2.rectangle(frame, (x_frame_len-x-w, y), (x_frame_len-x, y+h), (0, 255, 255), 2)
+        cv2.putText(frame, "Right profile face found!", (x_frame_len-x-w, y-2),
                     fonts, 0.5, (BLACK), 2)
 
     return profile_face_r
