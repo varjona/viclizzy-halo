@@ -49,14 +49,6 @@ fonts2 = cv2.FONT_HERSHEY_SCRIPT_SIMPLEX
 fonts3 = cv2.FONT_HERSHEY_COMPLEX_SMALL
 fonts4 = cv2.FONT_HERSHEY_TRIPLEX
 
-# Camera Object
-cap = cv2.VideoCapture(0)
-_, frame = cap.read()
-
-# Width and height of a frame (image).
-x_frame_len = len(frame[1])
-y_frame_len = len(frame)
-
 # Colors  >>> BGR Format(BLUE, GREEN, RED)
 distance_level = 0
 
@@ -87,14 +79,14 @@ def Focal_Length(measured_distance, real_width, width_in_rf_image):
     REAL_WIDTH (actual width of object) and WIDTH_OF_OBJECT_IN_IMAGE.
 
     Paramaters:
-        measured_distance   int     It is distance measured from object to the
+        measured_distance   float   It is distance measured from object to the
                                     camera while capturing reference image.
 
-        Real_Width          int     It is the actual width of object in the
+        real_ridth          float   It is the actual width of object in the
                                     real world (like My face width of 5.7
                                     inches).
 
-        Width_In_Image      int     It is object width in the frame /image in
+        width_in_rf_image   float   It is object width in the frame /image in
                                     our case in the reference image(found by
                                     Face detector).
 
@@ -125,15 +117,20 @@ def Distance_Finder(focal_length, real_face_width, face_width_in_frame):
     return distance
 
 
-def Face_Data(image, CallOut, distance_lvl):
+def Face_Data(image, call_out, distance_lvl):
     """
-    This function Detect face and Draw Rectangle and display the distance over
-    screen.
-
+    TODO:
+        Fix description of this function. Specify what the parameters are
+        and what this function does.
+    """
+    """
+    This function detects a face, draws a rectangle around face, and displays
+    the approximated distance.
+    
     Parameters:
         Image           Mat     Frame.
 
-        Call_Out        bool    If want show Distance and Rectangle on the
+        call_out        bool    If want show Distance and Rectangle on the
                                 Screen or not.
 
         distance_lvl    int     Which change the line according the Distance
@@ -185,7 +182,7 @@ def Face_Data(image, CallOut, distance_lvl):
             distance_lvl = 10
 
         # cv2.circle(image, (face_center_x, face_center_y),5, (255,0,255), 3 )
-        if CallOut is True:
+        if call_out is True:
             # cv2.line(image, (x,y), (face_center_x,face_center_y ), (155,155,155),1)
             cv2.line(image, (x, y-11), (x+180, y-11), (ORANGE), 28)
             cv2.line(image, (x, y-11), (x+180, y-11), (YELLOW), 20)
@@ -262,6 +259,14 @@ focal_length_found = Focal_Length(known_distance, known_width,
                                   ref_image_face_width)
 
 print(focal_length_found)
+
+# Camera Object
+cap = cv2.VideoCapture(0)
+_, frame = cap.read()
+
+# Width and height of a frame (image).
+x_frame_len = len(frame[1])
+y_frame_len = len(frame)
 
 while True:
     _, frame = cap.read()
