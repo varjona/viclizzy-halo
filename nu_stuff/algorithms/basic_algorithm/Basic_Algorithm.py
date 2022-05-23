@@ -25,7 +25,7 @@ class Basic_Algorithm():
         self.ref_image_location = configs["ref_imgs_path"] + configs["ref_img"]
         self.known_width = configs["known_width"]
         self.known_distance = configs["known_distance"]
-        self.ref_image_face_width = self.Face_Data(cv2.imread(self.ref_image_location))
+        self.ref_image_face_width = self.Face_Finder(cv2.imread(self.ref_image_location))
         self.focal_length = self.Focal_Length_Finder(self.known_distance,
                                                      self.known_width,
                                                      self.ref_image_face_width)
@@ -43,7 +43,7 @@ class Basic_Algorithm():
         distance = (self.known_width*self.focal_length)/face_width_in_frame
         return distance
     
-    def Face_Data(self, image):
+    def Face_Finder(self, image):
         face_width = 0 # making face width to zero
         
         # converting color image ot gray scale image

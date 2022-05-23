@@ -27,7 +27,7 @@ if __name__ == "__main__":
         
         # Capture face
         # TODO: enable multiple face capture
-        face_width_in_frame = Algorithm.Face_Data(frame)
+        face_width_in_frame = Algorithm.Face_Finder(frame)
         
         # check if the face is zero then not
         # find the distance
