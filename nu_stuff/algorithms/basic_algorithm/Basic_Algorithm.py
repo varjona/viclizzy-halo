@@ -35,6 +35,11 @@ class Basic_Algorithm():
         return focal_length
     
     def Distance_Finder(self, face_width_in_frame):
+        """
+        Utilizes the variables "known_width" and "focal_length" from the
+        "configs" file. The values are used to estimate the distance to an
+        object, in this case, "face_width_in_frame".
+        """
         distance = (self.known_width*self.focal_length)/face_width_in_frame
         return distance
     

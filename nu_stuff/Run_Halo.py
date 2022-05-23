@@ -1,8 +1,4 @@
-# install opencv "pip install opencv-python"
 import cv2
-import yaml
-import sys
-sys.path.append("./algorithms/basic_algorithm")
 from Basic_Algorithm import Basic_Algorithm
 
 if __name__ == "__main__":
@@ -19,6 +15,7 @@ if __name__ == "__main__":
     CHOCOLATE = (30, 105, 210)
     PINK = (147, 20, 255)
     ORANGE = (0, 69, 255)
+    
     fonts = cv2.FONT_HERSHEY_COMPLEX
     
     Algorithm = Basic_Algorithm()
@@ -36,11 +33,6 @@ if __name__ == "__main__":
         # find the distance
         
         if face_width_in_frame !=0:
-        	# Finding the distance by calling the function Distance Finder function
-        	# need these arguments:
-            # the Focal_Length,
-            # known_width(centimeters),
-            # and Known_distance(centimeters)
             distance = Algorithm.Distance_Finder(face_width_in_frame)
             
             # draw line as background of text
