@@ -1,4 +1,6 @@
 import cv2
+import sys
+sys.path.append("./algorithms/basic_algorithm")
 from Basic_Algorithm import Basic_Algorithm
 
 if __name__ == "__main__":
