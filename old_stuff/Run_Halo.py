@@ -276,8 +276,8 @@ while True:
     bodies = Body_Data(frame)
 
     # Get profile_face data
-    # profile_face_l = Profile_Face_Left_Data(frame, gray_frame)
-    # profile_face_r = Profile_Face_Right_Data(frame, gray_frame)
+    profile_face_l = Profile_Face_Left_Data(frame, gray_frame)
+    profile_face_r = Profile_Face_Right_Data(frame, gray_frame)
 
     # Get face data
     face_width_in_frame, Faces, _, _ = Face_Data(frame, True, distance_level)

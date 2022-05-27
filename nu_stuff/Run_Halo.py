@@ -1,7 +1,5 @@
 import cv2
-import sys
-sys.path.append("./algorithms/basic_algorithm")
-from Basic_Algorithm import Basic_Algorithm
+from algorithms.basic_algorithm.Basic_Algorithm import Basic_Algorithm
 
 if __name__ == "__main__":
     GREEN = (0, 255, 0)
@@ -28,7 +26,7 @@ if __name__ == "__main__":
         _, frame = cap.read()
         
         # Capture face
-        # TODO: enable multiple face capture
+        # TODO: enable multiple face capture, create detector object
         face_width_in_frame = Algorithm.Face_Finder(frame)
         
         # check if the face is zero then not
