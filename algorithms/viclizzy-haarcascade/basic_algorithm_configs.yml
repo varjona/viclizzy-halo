@@ -1,0 +1,17 @@
+# Basic Algorithm path
+
+# Haarcascade file info
+haarcascade_files_path: "./algorithms/basic_algorithm/haarcascade_xmls/"
+detector_xml: "haarcascade_frontalface_default.xml"
+
+# Reference file info
+ref_imgs_path: "./algorithms/basic_algorithm/ref_imgs/"
+ref_img: "ref_image.png"
+
+# WRT reference image
+# distance from camera to object(face) measured in centimeters
+known_distance: 76.2
+
+# WRT reference image
+# width of face in the real world or in centimeters
+known_width: 14.3
