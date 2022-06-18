@@ -22,12 +22,16 @@ if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
 
     while True:
-        # Read in a current frame of video
+        # Read in a current frame of video and make it gray.
         _, frame = cap.read()
+        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        
+        # show the frame on the screen
+        cv2.imshow("frame", frame)
         
         # Capture face
         # TODO: enable multiple face capture, create detector object
-        face_width_in_frame = Algorithm.Face_Finder(frame)
+        face_width_in_frame = Algorithm.Face_Detector(gray_frame)
         
         # check if the face is zero then not
         # find the distance
@@ -47,10 +51,7 @@ if __name__ == "__main__":
                         0.6,
                         GREEN,
                         2)
-        
-        # show the frame on the screen
-        cv2.imshow("frame", frame)
-        
+            
         # quit the program if you press 'q' on keyboard
         if cv2.waitKey(1) == ord("q"):
             cap.release()

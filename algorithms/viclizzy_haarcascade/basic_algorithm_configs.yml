@@ -1,0 +1,19 @@
+# Basic Algorithm path
+
+# Haarcascade file info. Must be defined from the perspective of Run_Halo.py.
+haarcascade_files_path: "./algorithms/viclizzy_haarcascade/haarcascade_xmls/"
+
+face_detector_xml: "haarcascade_frontalface_default.xml"
+profile_detector_xml: "haarcascade_profile.xml"
+
+# Reference file info
+ref_imgs_path: "./algorithms/viclizzy_haarcascade/ref_imgs/"
+ref_img: "ref_image.png"
+
+# WRT reference image
+# distance from camera to object(face) measured in centimeters
+known_distance: 76.2
+
+# WRT reference image
+# width of face in the real world or in centimeters
+known_width: 14.3
