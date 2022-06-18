@@ -46,6 +46,7 @@ class VicLizzy_Haarcascade():
         distance = (self.known_width*self.focal_length)/face_width_in_frame
         return distance
     
+    # TODO: Does not box in faces!
     def Face_Detector(self, image):
         face_width = 0 # making face width to zero
         
