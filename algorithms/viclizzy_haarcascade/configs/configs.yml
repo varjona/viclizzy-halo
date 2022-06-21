@@ -7,7 +7,7 @@ face_detector_xml: "haarcascade_frontalface_default.xml"
 profile_detector_xml: "haarcascade_profile.xml"
 
 # Reference file info
-ref_imgs_path: "./algorithms/viclizzy_haarcascade/ref_imgs/"
+ref_imgs_path: "./algorithms/viclizzy_haarcascade/configs/"
 ref_img: "ref_image.png"
 
 # WRT reference image
@@ -17,3 +17,18 @@ known_distance: 76.2
 # WRT reference image
 # width of face in the real world or in centimeters
 known_width: 14.3
+
+# Colors
+GREEN: (0, 255, 0)
+RED: (0, 0, 255)
+BLACK: (0, 0, 0)
+YELLOW: (0, 255, 255)
+WHITE: (255, 255, 255)
+CYAN: (255, 255, 0)
+MAGENTA: (255, 0, 242)
+GOLDEN: (32, 218, 165)
+LIGHT_BLUE: (255, 9, 2)
+PURPLE: (128, 0, 128)
+CHOCOLATE: (30, 105, 210)
+PINK: (147, 20, 255)
+ORANGE: (0, 69, 255)

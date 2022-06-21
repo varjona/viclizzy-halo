@@ -7,6 +7,7 @@ Created on Sun May 22 14:58:08 2022
 """
 import cv2
 import yaml
+import math
 
 class VicLizzy_Haarcascade():
     def __init__(self):
@@ -14,13 +15,15 @@ class VicLizzy_Haarcascade():
         #   make a Python script that loads these variables/values.
         # "configs" won't be used afterwards, so might as well not even put
         # self.        
-        with open("algorithms/viclizzy_haarcascade/basic_algorithm_configs.yml") as file:
+        with open("algorithms/viclizzy_haarcascade/configs/configs.yml") as file:
             configs = yaml.safe_load(file)
         
         # This algorithm uses the detector, constructed using the Haarcascade
         # file.
+        self.BLACK = eval(configs["BLACK"])
+        self.fonts = cv2.FONT_HERSHEY_COMPLEX
         self.cascade_classifier_location = configs["haarcascade_files_path"]
-        self.face_detector = cv2.CascadeClassifier(self.cascade_classifier_location + configs["face_detector_xml"])
+        self.front_face_detector = cv2.CascadeClassifier(self.cascade_classifier_location + configs["face_detector_xml"])
         self.profile_detector = cv2.CascadeClassifier(self.cascade_classifier_location + configs["profile_detector_xml"])
         
         # We use a reference image to generate an important value
@@ -28,7 +31,7 @@ class VicLizzy_Haarcascade():
         self.ref_image_location = configs["ref_imgs_path"] + configs["ref_img"]
         self.known_width = configs["known_width"]
         self.known_distance = configs["known_distance"]
-        self.ref_image_face = self.Face_Detector(cv2.imread(self.ref_image_location))
+        self.ref_image_face = self.front_face_detector.detectMultiScale(cv2.imread(self.ref_image_location))
         self.ref_image_face_width = self.ref_image_face[0][2]
         self.focal_length = self.Focal_Length_Finder(self.known_distance,
                                                      self.known_width,
@@ -47,7 +50,29 @@ class VicLizzy_Haarcascade():
         distance = (self.known_width*self.focal_length)/face_width_in_frame
         return distance
 
-    def Face_Detector(self, image):
-        # detecting faces in the image
-        return self.face_detector.detectMultiScale(image, 1.3, 5)
+    def Position_Finder(self, distance_to_face, face_x):
+        """
+        Utilizes the variables "distance_to_face" and "face_x" coming from Run_Halo.py.
+        The values are used to estimate the x and y position of a face object.
+        """
+        angle = face_x / 8
+        position_x = distance_to_face * math.sin(math.radians(angle))
+        position_y = distance_to_face * math.cos(math.radians(angle))
+
+        return round(position_x, 2), round(position_y, 2)
+
+    def Get_Front_Face_Position(self, frame, faces):
+        positions = []
+        for (x, y, w, h) in faces:
+            distance_to_face = self.Distance_Finder(w)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+            # Getting face object position
+            position_x, position_y = self.Position_Finder(distance_to_face, x)
+            positions.append((position_x, position_y))
+
+            # Drawing Text on the screen
+            cv2.putText(frame, f"X: {position_x} cm, Y: {position_y} cm", (x - 6, y - 6), self.fonts, 0.5, self.BLACK, 2)
+
+        return positions
 
