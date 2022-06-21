@@ -28,13 +28,15 @@ class VicLizzy_Haarcascade():
         self.ref_image_location = configs["ref_imgs_path"] + configs["ref_img"]
         self.known_width = configs["known_width"]
         self.known_distance = configs["known_distance"]
-        self.ref_image_face_width = self.Face_Detector(cv2.imread(self.ref_image_location))
+        self.ref_image_face = self.Face_Detector(cv2.imread(self.ref_image_location))
+        self.ref_image_face_width = self.ref_image_face[0][2]
         self.focal_length = self.Focal_Length_Finder(self.known_distance,
                                                      self.known_width,
                                                      self.ref_image_face_width)
     
     def Focal_Length_Finder(self, measured_distance, real_width, width_in_rf_image):
         focal_length = (width_in_rf_image*measured_distance)/real_width
+        print(focal_length)
         return focal_length
     
     def Distance_Finder(self, face_width_in_frame):

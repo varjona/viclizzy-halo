@@ -35,20 +35,14 @@ if __name__ == "__main__":
         cv2.line(frame, (30, 30), (230, 30), RED, 32)
         cv2.line(frame, (30, 30), (230, 30), BLACK, 28)
 
-        print(face_width_in_frame)
 
         for (x, y, w, h) in faces:
             dist_face = Algorithm.Distance_Finder(w)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
             # Drawing Text on the screen
-            cv2.putText(frame,
-                        f"Distance: {dist_face}",
-                        (30, 35),
-                        fonts,
-                        0.6,
-                        GREEN,
-                        2)
+            cv2.putText(frame, f"Distance: {dist_face} cm",
+                        (x - 6, y - 6), fonts, 0.5, BLACK, 2)
 
         # show the frame on the screen
         cv2.imshow("frame", frame)
