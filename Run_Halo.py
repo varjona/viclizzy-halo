@@ -16,7 +16,8 @@ if __name__ == "__main__":
 
         if len(front_faces) != 0:
             position_list = Algorithm.Get_Front_Face_Position(frame, front_faces)
-            print(position_list)
+            #print(position_list)
+
             #TODO:
             # id = Object_Tracker()
             # Send_Data_To_Flask(id, position_x, position_y)
