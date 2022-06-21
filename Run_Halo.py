@@ -29,19 +29,13 @@ if __name__ == "__main__":
         # Capture face
         # TODO: enable multiple face capture, create detector object
         faces = Algorithm.Face_Detector(gray_frame)
-        
-        # check if the face is zero then not
-        # find the distance
-        cv2.line(frame, (30, 30), (230, 30), RED, 32)
-        cv2.line(frame, (30, 30), (230, 30), BLACK, 28)
-
 
         for (x, y, w, h) in faces:
             dist_face = Algorithm.Distance_Finder(w)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
             # Drawing Text on the screen
-            cv2.putText(frame, f"Distance: {dist_face} cm",
+            cv2.putText(frame, f"Distance: {dist_face:.2f} cm",
                         (x - 6, y - 6), fonts, 0.5, BLACK, 2)
 
         # show the frame on the screen

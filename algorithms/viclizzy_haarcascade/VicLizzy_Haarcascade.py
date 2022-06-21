@@ -36,7 +36,6 @@ class VicLizzy_Haarcascade():
     
     def Focal_Length_Finder(self, measured_distance, real_width, width_in_rf_image):
         focal_length = (width_in_rf_image*measured_distance)/real_width
-        print(focal_length)
         return focal_length
     
     def Distance_Finder(self, face_width_in_frame):
