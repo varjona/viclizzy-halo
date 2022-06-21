@@ -45,25 +45,8 @@ class VicLizzy_Haarcascade():
         """
         distance = (self.known_width*self.focal_length)/face_width_in_frame
         return distance
-    
-    # TODO: Does not box in faces!
+
     def Face_Detector(self, image):
-        face_width = 0 # making face width to zero
-        
-        # converting color image ot gray scale image
-        #gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        
         # detecting faces in the image
-        faces = self.face_detector.detectMultiScale(image, 1.3, 5)
-        
-        # looping through the faces detect in the image
-        # getting coordinates x, y , width and height
-        for (x, y, h, w) in faces:
-            # draw the rectangle on the face with green ((0, 255, 0))
-            cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            
-            # getting face width in the pixels
-            face_width = w
-        
-        # return the face width in pixel
-        return face_width
+        return self.face_detector.detectMultiScale(image, 1.3, 5)
+

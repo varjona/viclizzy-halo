@@ -25,33 +25,34 @@ if __name__ == "__main__":
         # Read in a current frame of video and make it gray.
         _, frame = cap.read()
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        
-        # show the frame on the screen
-        cv2.imshow("frame", frame)
-        
+
         # Capture face
         # TODO: enable multiple face capture, create detector object
-        face_width_in_frame = Algorithm.Face_Detector(gray_frame)
+        faces = Algorithm.Face_Detector(gray_frame)
         
         # check if the face is zero then not
         # find the distance
-        
-        if face_width_in_frame !=0:
-            distance = Algorithm.Distance_Finder(face_width_in_frame)
-            
-            # draw line as background of text
-            cv2.line(frame, (30, 30), (230, 30), RED, 32)
-            cv2.line(frame, (30, 30), (230, 30), BLACK, 28)
-            
+        cv2.line(frame, (30, 30), (230, 30), RED, 32)
+        cv2.line(frame, (30, 30), (230, 30), BLACK, 28)
+
+        print(face_width_in_frame)
+
+        for (x, y, w, h) in faces:
+            dist_face = Algorithm.Distance_Finder(w)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
             # Drawing Text on the screen
             cv2.putText(frame,
-                        f"Distance: {round(distance, 2)} CM",
+                        f"Distance: {dist_face}",
                         (30, 35),
                         fonts,
                         0.6,
                         GREEN,
                         2)
-            
+
+        # show the frame on the screen
+        cv2.imshow("frame", frame)
+
         # quit the program if you press 'q' on keyboard
         if cv2.waitKey(1) == ord("q"):
             cap.release()
