@@ -1,46 +1,44 @@
-# app.py
-# curl http://127.0.0.1:5000/countries
-
 from flask import Flask, request, jsonify
 import json
 
 app = Flask(__name__)
 
-countries = [
-    {"id": 1, "name": "Thailand", "capital": "Bangkok", "area": 513120},
-    {"id": 2, "name": "Australia", "capital": "Canberra", "area": 7617930},
-    {"id": 3, "name": "Egypt", "capital": "Cairo", "area": 1010408},
+data = [
+    {"id": 1, "position": (0, 0), "color": "RED"}
 ]
 
 def _find_next_id():
-    return max(country["id"] for country in countries) + 1
+    return max(item["id"] for item in data) + 1
 
 @app.route('/')
 def index():
-    return json.dumps(countries)
+    return json.dumps(data)
 
-@app.get("/countries")
-def get_countries():
-    return jsonify(countries)
+@app.get("/data")
+def get_data():
+    return jsonify(data)
 
-@app.put("/countries")
-def put_country():
+# Put overwrites data
+@app.put("/data")
+def put_positions():
     if request.is_json:
-        country = json.loads(request.get_json())[0]
-        for c in countries:
-            if c["name"] == country["name"]:
-               c["area"] = country["area"]
+        put_data = json.loads(request.get_json())[0]
+        for item in data:
+            if item["id"] == put_data["id"]:
+                item["position"] = put_data["position"]
+                item["color"] = put_data["color"]
+        return put_data, 200
     return {"error": "Request must be JSON"}, 415
 
-
-@app.post("/countries")
-def add_country():
+# Post adds data
+@app.post("/data")
+def add_data():
     if request.is_json:
-        country = json.loads(request.get_json())[0]
-        country["id"] = _find_next_id()
-        countries.append(country)
-        return country, 201
+        post_data = json.loads(request.get_json())[0]
+        post_data["id"] = _find_next_id()
+        data.append(post_data)
+        return post_data, 201
     return {"error": "Request must be JSON"}, 415
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
