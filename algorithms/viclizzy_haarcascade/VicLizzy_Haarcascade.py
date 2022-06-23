@@ -50,29 +50,31 @@ class VicLizzy_Haarcascade():
         distance = (self.known_width*self.focal_length)/face_width_in_frame
         return distance
 
-    def Position_Finder(self, distance_to_face, face_x):
+    def Position_Finder(self, distance_to_face, x_lower_left_corner):
         """
         Utilizes the variables "distance_to_face" and "face_x" coming from Run_Halo.py.
         The values are used to estimate the x and y position of a face object.
         """
-        angle = face_x / 8
+        angle = x_lower_left_corner / 8
         position_x = distance_to_face * math.sin(math.radians(angle))
         position_y = distance_to_face * math.cos(math.radians(angle))
 
         return round(position_x, 2), round(position_y, 2)
 
     def Get_Front_Face_Position(self, frame, faces):
+        """
+        """
         positions = []
         for (x, y, w, h) in faces:
             distance_to_face = self.Distance_Finder(w)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
             # Getting face object position
-            position_x, position_y = self.Position_Finder(distance_to_face, x)
+            position_x, position_y = self.Position_Finder(distance_to_face, x+w/2)
             positions.append((position_x, position_y))
 
             # Drawing Text on the screen
-            cv2.putText(frame, f"X: {position_x} cm, Y: {position_y} cm", (x - 6, y - 6), self.fonts, 0.5, self.BLACK, 2)
+            cv2.putText(frame,
+                        f"X: {position_x} cm\n Y: {position_y} cm\nDist: {distance_to_face}", (x - 6, y - 6), self.fonts, 0.5, self.BLACK, 2)
 
         return positions
-
