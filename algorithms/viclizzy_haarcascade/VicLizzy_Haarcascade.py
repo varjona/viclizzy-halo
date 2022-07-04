@@ -41,6 +41,14 @@ class VicLizzy_Haarcascade():
         focal_length = (width_in_rf_image*measured_distance)/real_width
         return focal_length
     
+    def Get_Front_Faces_Distance(self, faces):
+        front_faces_distance_list = []
+        
+        for (x, y, w, h) in faces:
+            front_faces_distance_list.append(self.Distance_Finder(w))
+        
+        return front_faces_distance_list
+    
     def Distance_Finder(self, face_width_in_frame):
         """
         Utilizes the variables "known_width" and "focal_length" from the
@@ -50,7 +58,7 @@ class VicLizzy_Haarcascade():
         distance = (self.known_width*self.focal_length)/face_width_in_frame
         return distance
 
-    def Position_Finder(self, distance_to_face, x_lower_left_corner):
+    def Front_Face_Position_Finder(self, distance_to_face, x_lower_left_corner):
         """
         Utilizes the variables "distance_to_face" and "face_x" coming from Run_Halo.py.
         The values are used to estimate the x and y position of a face object.
@@ -61,8 +69,9 @@ class VicLizzy_Haarcascade():
 
         return round(position_x, 2), round(position_y, 2)
 
-    def Get_Front_Face_Position(self, frame, faces):
+    def Get_Front_Face_Positions(self, frame, faces):
         """
+        Returns a list of tuples with the approximated positions.
         """
         positions = []
         for (x, y, w, h) in faces:
@@ -75,6 +84,10 @@ class VicLizzy_Haarcascade():
 
             # Drawing Text on the screen
             cv2.putText(frame,
-                        f"X: {position_x} cm\n Y: {position_y} cm\nDist: {distance_to_face}", (x - 6, y - 6), self.fonts, 0.5, self.BLACK, 2)
+                        f"X: {position_x} cm; Y: {position_y} cm; Dist: {distance_to_face}", (x - 6, y - 6), self.fonts, 0.5, self.BLACK, 2)
 
         return positions
+    
+    def Get_Phi_List(self, faces):
+        for (x, y, w, h) in faces:
+            phi_of_face = x + w/2.0

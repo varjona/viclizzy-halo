@@ -13,10 +13,12 @@ ref_img: "ref_image.png"
 # WRT reference image
 # distance from camera to object(face) measured in centimeters
 known_distance: 76.2
+# known_distance: 100
 
 # WRT reference image
 # width of face in the real world or in centimeters
 known_width: 14.3
+# known_width: 13.5
 
 # Colors
 GREEN: (0, 255, 0)
