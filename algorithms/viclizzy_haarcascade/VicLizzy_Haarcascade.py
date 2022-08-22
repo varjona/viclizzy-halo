@@ -10,6 +10,9 @@ import yaml
 import math
 
 class VicLizzy_Haarcascade():
+    '''
+    TODO - Organize the methods from a less complex to more complex. Some ideas:
+    '''
     def __init__(self):
         # TODO: instead of having to use PyYAML to parse variables, just
         #   make a Python script that loads these variables/values.
@@ -91,3 +94,5 @@ class VicLizzy_Haarcascade():
     def Get_Phi_List(self, faces):
         for (x, y, w, h) in faces:
             phi_of_face = x + w/2.0
+        pass
+    
