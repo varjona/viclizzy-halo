@@ -9,13 +9,13 @@ git  clone git@github.com:victorarjona2/viclizzy-halo.git
 
 - Windows
 
-  pip install opencv-python
-  pip install Flask
+  - pip install opencv-python
+  - pip install Flask
 
-- _install Opencv-python on Linux or Mac_
+- Linux or Mac_
 
-  pip3 install opencv-python
-  pip3 install Flask
+  - pip3 install opencv-python
+  - pip3 install Flask
 
 ## Start API server
 
