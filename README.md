@@ -5,15 +5,17 @@ Computer vision and LED mash-up project. More details to come...
 
 git  clone git@github.com:victorarjona2/viclizzy-halo.git
 
-## install Opencv-python
+## install Opencv-python and Flask python packages
 
 - Windows
 
   pip install opencv-python
+  pip install Flask
 
 - _install Opencv-python on Linux or Mac_
 
   pip3 install opencv-python
+  pip3 install Flask
 
 ## Start API server
 
